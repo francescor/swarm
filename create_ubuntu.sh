@@ -38,7 +38,7 @@ VM_ID=$1
 # Enable out traffic from Proxmox
 iptables -I OUTPUT -j ACCEPT
 # Get image
-wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -o /tmp/downloaded_image.img
+wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img --output-document=/tmp/downloaded_image.img
 # re-enable firewall rules
 shorewall restart
 qm create $VM_ID --name "ubuntu${VM_ID}" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
@@ -46,7 +46,7 @@ qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img
 # Use cloud-init
 qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
-# we may skip this
+# we may skip this, but is useful for output in Proxmox console
 qm set $VM_ID --serial0 socket --vga serial0
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
