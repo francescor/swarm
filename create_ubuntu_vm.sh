@@ -2,6 +2,12 @@
 
 # See also https://pve.proxmox.com/wiki/Cloud-Init_Support
 
+
+# The snippets dir in Proxmox
+SNIPPETS_DIR=/var/lib/vz/snippets/
+# ssh for root access
+SSH_KEY=ssh_public_keys/id_ed25519.pub
+
 # All commands will be executed on a Proxmox host
 
 if [ $# -eq 0 ]
@@ -31,9 +37,6 @@ fi
 # Have the cloud-init snippet ready at something like
 # cat /var/lib/vz/snippets/cloud_init_ubuntu22_04_version00.yml
 
-# The snippet dir in Proxmox
-SNIPPETS_DIR=/var/lib/vz/snippets/
-SSH_KEY=ssh_public_keys/id_ed25519.pub
 VM_ID=$1
 # Enable out traffic from Proxmox
 iptables -I OUTPUT -j ACCEPT
