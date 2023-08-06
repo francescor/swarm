@@ -1,0 +1,2 @@
+# swarm
+Docker swarm receipts
