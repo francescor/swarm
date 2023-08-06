@@ -67,7 +67,7 @@ qm start $VM_ID
 # Enter VM
 echo
 echo "VM $VM_ID created and started, enter with"
-echo "ssh ubuntu@10.10.10.200"
+echo "ssh ubuntu@10.10.10.${VM_ID}"
 # follow cloud init output (it should reboot)
 # tail -f /var/log/cloud-init-output.log 
 
