@@ -37,9 +37,19 @@ if (( $1 < 200 || $1 > 209 )); then
 fi
 
 # Have the cloud-init snippet ready at something like
-# cat /var/lib/vz/snippets/cloud_init_ubuntu22_04_version00.yml
+# customize: here we choose VMid 4200, 4201...
+IP=$1
+VM_ID="4${IP}"
 
-VM_ID=$1
+# Assure VM is not already present
+qm list  | awk '{print $1}' | grep $VM_ID
+if [ $? -eq 0 ]
+  then
+    echo "Error: VM with ID $VM_ID is already present"
+    echo
+    exit 1
+fi
+
 # Enable out traffic from Proxmox
 iptables -I OUTPUT -j ACCEPT
 # Get image
@@ -47,7 +57,9 @@ wget --no-clobber --output-document=/tmp/downloaded_image.img https://cloud-imag
 # re-enable firewall rules
 shorewall restart
 qm create $VM_ID --name "ubuntu${VM_ID}" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
-qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img
+qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img,backup=0
+# add disk for /var/lib/docker disk
+qm set $VM_ID --scsi1 local-zfs:200,backup=0
 # Use cloud-init
 qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
@@ -56,7 +68,7 @@ qm set $VM_ID --serial0 socket --vga serial0
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
 qm set $VM_ID --agent enabled=1
-qm set $VM_ID --ipconfig0 ip=10.10.10.${VM_ID}/24,gw=10.10.10.254
+qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.254
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`
@@ -68,7 +80,7 @@ sed -i "s/SMB_USERNAME/${SMB_USERNAME}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/SMB_PASSWORD/${SMB_PASSWORD}/g" $SNIPPETS_DIR/${SNIPPET}
 qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET}"
 # Resize disk
-qm resize $VM_ID scsi0 +200G
+qm resize $VM_ID scsi0 +50G
 # Start VM
 qm start $VM_ID
 
