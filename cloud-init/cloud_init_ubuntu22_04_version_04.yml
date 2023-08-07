@@ -23,8 +23,33 @@ ssh_authorized_keys:
 chpasswd:
   expire: false
 
-#  CUSTOM
-#
+mounts:
+  - ['/dev/sdb1', '/var/lib/docker']
+
+# mount_default_fields
+# These values are used to fill in any entries in 'mounts' that are not
+# complete.  This must be an array, and must have 7 fields.
+mount_default_fields: [None, None, "auto", "defaults,nofail", "0", "2"]
+
+disk_setup:
+  /dev/sdb:
+    table_type: gpt
+    layout: true
+    overwrite: true
+
+# setup the file system on the device
+fs_setup:
+  - label: docker
+    filesystem: ext4
+    device: /dev/sdb
+    partition: auto
+    overwrite: true
+
+# apt_pipelining (configure Acquire::http::Pipeline-Depth)
+# Default: disables HTTP pipelining. Certain web servers, such
+# as S3 do not pipeline properly (LP: #948461).
+apt_pipelining: false
+
 # Add apt resources
 apt:
   sources:
