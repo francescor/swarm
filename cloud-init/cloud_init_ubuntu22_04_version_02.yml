@@ -40,48 +40,48 @@ package_reboot_if_required: true
 # Install the following packages
 # (keep alphabetical order)
 packages:
- - aptitude
- - apt-utils
- - bash-completion
- - btop
- - byobu
- - bzip2
- - ca-certificates
- - cifs-utils
- - colordiff
- - cron
- - ctop
- - curl
- - dnsutils
- - docker-ce
- - figlet
- - git
- - htop
- - httpie
- - iftop
- - iotop
- - jq
- - lsb-release
- - mc
- - mlocate
- - ncdu
- - neofetch
- - net-tools
- - nmap
- - plocate
- - pwgen
- - qemu-guest-agent
- - rsync
- - screen
- - sysfsutils
- - tar
- - tree
- - unattended-upgrades
- - unzip
- - vim
- - wget
- - whois
- - zip
+  - aptitude
+  - apt-utils
+  - bash-completion
+  - btop
+  - byobu
+  - bzip2
+  - ca-certificates
+  - cifs-utils
+  - colordiff
+  - cron
+  - ctop
+  - curl
+  - dnsutils
+  - docker-ce
+  - figlet
+  - git
+  - htop
+  - httpie
+  - iftop
+  - iotop
+  - jq
+  - lsb-release
+  - mc
+  - mlocate
+  - ncdu
+  - neofetch
+  - net-tools
+  - nmap
+  - plocate
+  - pwgen
+  - qemu-guest-agent
+  - rsync
+  - screen
+  - sysfsutils
+  - tar
+  - tree
+  - unattended-upgrades
+  - unzip
+  - vim
+  - wget
+  - whois
+  - zip
 
 groups:
   - users
@@ -134,6 +134,9 @@ runcmd:
   # to avoid perl errors on locale
   - locale-gen "en_US.UTF-8"
   - update-alternatives --set editor /usr/bin/vim.basic
+  # Hetzner CIFS storagebox
+  - apt install linux-modules-extra-$(uname -r) -y
+  - mount -a
 
 # Write arbitrary files on filesystem
 write_files:
@@ -175,6 +178,15 @@ write_files:
       /usr/bin/docker system prune --force --all
     path: /etc/cron.daily/docker-cleanup
     permissions: '0755'
-
+  - content: |
+      username=SMB_USERNAME
+      password=SMB_PASSWORD
+    path: /etc/smb-credentials.txt
+    permissions: '0600'
+  - content: |
+      # mount CIFS https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs
+      //SMB_USERNAME.your-storagebox.de/backup /srv cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0660,dir_mode=0770 0 0
+    path: /etc/fstab
+    append: true
 # Echo the following message when finished without errors
 final_message: "===> cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"

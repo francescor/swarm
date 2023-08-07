@@ -1,14 +1,16 @@
+#!/bin/bash
+
 # Create a Proxmox VM with latest ubuntu & cloud_init
-
+# be executed on a Proxmox host
 # See also https://pve.proxmox.com/wiki/Cloud-Init_Support
-
 
 # The snippets dir in Proxmox
 SNIPPETS_DIR=/var/lib/vz/snippets/
 # ssh for root access
 SSH_KEY=ssh_public_keys/id_ed25519.pub
 
-# All commands will be executed on a Proxmox host
+# load secrets
+source secrets
 
 if [ $# -eq 0 ]
   then
@@ -62,6 +64,8 @@ cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
 # customize hostname
 sed -i "s/my_hostname/ubuntu-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/SMB_USERNAME/${SMB_USERNAME}/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/SMB_PASSWORD/${SMB_PASSWORD}/g" $SNIPPETS_DIR/${SNIPPET}
 qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET}"
 # Resize disk
 qm resize $VM_ID scsi0 +200G
@@ -73,5 +77,5 @@ echo
 echo "VM $VM_ID created and started, enter with"
 echo "ssh ubuntu@10.10.10.${VM_ID}"
 # follow cloud init output (it should reboot)
-# tail -f /var/log/cloud-init-output.log 
+# tail -f /var/log/cloud-init-output.log
 
