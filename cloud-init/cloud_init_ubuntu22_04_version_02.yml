@@ -47,6 +47,7 @@ packages:
  - byobu
  - bzip2
  - ca-certificates
+ - cifs-utils
  - colordiff
  - cron
  - ctop
@@ -165,7 +166,7 @@ write_files:
       autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab fileencoding=utf-8
       autocmd FileType bash setlocal ts=2 sts=2 sw=2 expandtab fileencoding=utf-8
       autocmd FileType json setlocal ts=2 sts=2 sw=2 expandtab fileencoding=utf-8
-      # remove trailing spaces
+      " remove trailing spaces
       autocmd BufWritePre * :%s/\s\+$//e
     path: /etc/vim/vimrc.local
   - content: |
