@@ -6,10 +6,10 @@
 
 # use keywork MY_HOSTNAME (will be replaced by my script)
 
-hostname: MY_HOSTNAME
+hostname: my_hostname
 manage_etc_hosts: true
-fqdn: MY_HOSTNAME.aaahoy.local
-# timezone: US/Eastern
+fqdn: my_hostname.my_domain
+timezone: Europe/Rome
 ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa9Rib5xmP+bAd+JC5zM1EK5RsAtYk6cYX+h++UUdj3 dante-ed25519@laptop
 chpasswd:
@@ -96,7 +96,26 @@ runcmd:
  - chgrp users /srv
  - chmod 02775 /srv
  - systemctl restart qemu-guest-agent
+ - apt purge -y  popularity-contest   
  - apt -y autoremove   
+   # remove Ubuntu trash
+ - sed -i 's/^ENABLED=.*/ENABLED=0/' /etc/default/motd-news
+ # remove snapd trash
+ - snap remove lxd
+ - snap remove core20
+ - snap remove snapd
+ - systemctl stop snapd.service
+ - systemctl stop snapd.socket
+ - systemctl stop snapd.seeded.service
+ - systemctl disable snapd.service
+ - systemctl disable snapd.socket
+ - systemctl disable snapd.seeded.service
+ - systemctl stop snapd.service
+ - systemctl stop snapd.socket
+ - systemctl stop snapd.seeded.service
+ - rm -rf /var/cache/snapd/
+ - apt autoremove --purge snapd -y
+ - rm -rf ~/snap/
 
 # Write arbitrary files on filesystem
 write_files:
@@ -138,4 +157,4 @@ write_files:
     permissions: '0755'
 
 # Echo the following message when finished without errors
-final_message: "cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"
+final_message: "===> cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"

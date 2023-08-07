@@ -60,7 +60,8 @@ LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail 
 SNIPPET=VM_${VM_ID}_`basename ${LATEST_CLOUD_INIT}`
 cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
 # customize hostname
-sed -i "s/MY_HOSTNAME/ubuntu-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/my_hostname/ubuntu-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}
 qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET}"
 # Resize disk
 qm resize $VM_ID scsi0 +200G
