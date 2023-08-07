@@ -59,8 +59,8 @@ qm set $VM_ID --agent enabled=1
 qm set $VM_ID --ipconfig0 ip=10.10.10.${VM_ID}/24,gw=10.10.10.254
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
-SNIPPET=VM_${VM_ID}_`basename ${LATEST_CLOUD_INIT}`
-cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+SNIPPET=`basename ${LATEST_CLOUD_INIT}`
+cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
 # customize hostname
 sed -i "s/my_hostname/ubuntu-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}
