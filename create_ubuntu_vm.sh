@@ -43,7 +43,7 @@ VM_ID=$1
 # Enable out traffic from Proxmox
 iptables -I OUTPUT -j ACCEPT
 # Get image
-wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img --output-document=/tmp/downloaded_image.img
+wget --no-clobber --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 # re-enable firewall rules
 shorewall restart
 qm create $VM_ID --name "ubuntu${VM_ID}" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
