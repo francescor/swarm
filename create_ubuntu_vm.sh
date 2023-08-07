@@ -49,7 +49,7 @@ qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img
 # Use cloud-init
 qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
-# we may skip this, but is useful for output in Proxmox console
+# we may skip this, but is useful to see the output of cloud-init in Proxmox console
 qm set $VM_ID --serial0 socket --vga serial0
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
