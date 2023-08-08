@@ -14,7 +14,7 @@ In a Proxmox host, create 3 swarm nodes with
 https://docs.docker.com/engine/reference/commandline/swarm_init/
 
 ```
-# enter master
+# enter leader
 ssh ubuntu@10.10.10.201
 # initialize swarm
 docker swarm init  --max-snapshots 2 \
@@ -25,11 +25,11 @@ docker swarm init  --max-snapshots 2 \
 docker swarm join-token manager
 ```
 
-then start keepalived on master
+then start keepalived on leader
 
 ```
 # execute keepalived, so to reach the swarm with 10.10.10.200
-sudo /root/docker-run-keepalived-master.sh
+sudo /root/docker-run-keepalived-leader.sh
 ```
 
 Joint other nodes

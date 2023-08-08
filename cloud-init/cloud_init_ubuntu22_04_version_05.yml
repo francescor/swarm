@@ -242,7 +242,7 @@ write_files:
       -e KEEPALIVED_VIRTUAL_IPS=10.10.10.200 \
       -e KEEPALIVED_PRIORITY=200 \
       osixia/keepalived:2.0.20
-    path: /root/docker-run-keepalived-master.sh
+    path: /root/docker-run-keepalived-leader.sh
     permissions: '0700'
   - content: |
       #!/bin/bash
