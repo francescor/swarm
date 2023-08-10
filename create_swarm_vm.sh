@@ -8,6 +8,7 @@
 SNIPPETS_DIR=/var/lib/vz/snippets/
 # ssh for root access
 SSH_KEY=ssh_public_keys/id_ed25519.pub
+NFS_SERVER_IP=10.10.10.210
 
 # load secrets
 source secrets
@@ -37,12 +38,12 @@ if (( $1 < 200 || $1 > 209 )); then
 fi
 
 # Have the cloud-init snippet ready at something like
-# customize: here we choose VMid 4200, 4201...
+# customize: here we choose VMid 200, 201...
 IP=$1
-VM_ID="4${IP}"
+VM_ID="${IP}"
 
 # Assure VM is not already present
-qm list  | awk '{print $1}' | grep $VM_ID
+qm list  | awk '{print $1}' | grep " $VM_ID"
 if [ $? -eq 0 ]
   then
     echo "Error: VM with ID $VM_ID is already present"
@@ -59,7 +60,7 @@ shorewall restart
 qm create $VM_ID --name "swarm${IP}" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
 qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img,backup=0
 # add disk for /var/lib/docker disk
-qm set $VM_ID --scsi1 local-zfs:200,backup=0
+qm set $VM_ID --scsi1 local-zfs:100,backup=0
 # Use cloud-init
 qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
@@ -74,10 +75,11 @@ LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail 
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`
 cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
 # customize hostname
-sed -i "s/my_hostname/ubuntu-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/my_hostname/swarm-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/SMB_USERNAME/${SMB_USERNAME}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/SMB_PASSWORD/${SMB_PASSWORD}/g" $SNIPPETS_DIR/${SNIPPET}
+sed -i "s/NFS_SERVER_IP/${NFS_SERVER_IP}/g" $SNIPPETS_DIR/${SNIPPET}
 qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET}"
 # Resize disk
 qm resize $VM_ID scsi0 +50G

@@ -157,7 +157,7 @@ runcmd:
   - systemctl stop snapd.seeded.service
   - rm -rf /var/cache/snapd/
   - apt autoremove --purge snapd -y
-  - rm -rf /root/snap
+  - rm -rf ~/snap/
   # remove apport trash
   - systemctl stop apport
   - sed -i 's/^enabled=.*/enabled=0/' /etc/default/apport

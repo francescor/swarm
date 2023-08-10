@@ -24,7 +24,7 @@ chpasswd:
   expire: false
 
 mounts:
-  - ['/dev/sdb1', '/var/lib/docker']
+  - ['/dev/sdb1', '/var/nfs-share']
 
 # mount_default_fields
 # These values are used to fill in any entries in 'mounts' that are not
@@ -39,7 +39,7 @@ disk_setup:
 
 # setup the file system on the device
 fs_setup:
-  - label: docker
+  - label: nfs
     filesystem: ext4
     device: /dev/sdb
     partition: auto
@@ -49,13 +49,6 @@ fs_setup:
 # Default: disables HTTP pipelining. Certain web servers, such
 # as S3 do not pipeline properly (LP: #948461).
 apt_pipelining: false
-
-# Add apt resources
-apt:
-  sources:
-    docker:
-      source: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
-      keyid: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
 
 # Upgrade the instance on first boot
 package_upgrade: true
@@ -78,7 +71,6 @@ packages:
   - ctop
   - curl
   - dnsutils
-  - docker-ce
   - figlet
   - git
   - htop
@@ -92,7 +84,7 @@ packages:
   - ncdu
   - neofetch
   - net-tools
-  - nfs-common
+  - nfs-kernel-server
   - nmap
   - plocate
   - pwgen
@@ -123,7 +115,7 @@ users:
   - name: dante
     gecos: Dante
     primary_group: users
-    groups: admin, docker
+    groups: admin
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
@@ -131,11 +123,10 @@ users:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa9Rib5xmP+bAd+JC5zM1EK5RsAtYk6cYX+h++UUdj3 dante-ed25519@laptop
 
 runcmd:
-  - mkdir /var/data
-  # - chgrp users /var/data
-  # - chmod 02775 /var/data
+  - mkdir /var/nfs-share
+  # - chgrp users /var/nfs-share
+  - chmod 775 /var/nfs-share
   - mkdir /backup
-  - chgrp users /backup
   - chmod 02775 /backup
   - systemctl restart qemu-guest-agent
   - apt purge -y  popularity-contest
@@ -157,7 +148,7 @@ runcmd:
   - systemctl stop snapd.seeded.service
   - rm -rf /var/cache/snapd/
   - apt autoremove --purge snapd -y
-  - rm -rf /root/snap
+  - rm -rf ~/snap/
   # remove apport trash
   - systemctl stop apport
   - sed -i 's/^enabled=.*/enabled=0/' /etc/default/apport
@@ -165,16 +156,20 @@ runcmd:
   - systemctl mask apport.service
   - rm -rf /etc/cron.daily/apport
   - rm -rf /var/crash/*
-  # disable updatedb from scanning /var/lib/docker
-  - sed -i 's/PRUNEPATHS="/&\/var\/lib\/docker /' /etc/updatedb.conf
+  # disable updatedb from scanning /var/nfs-share
+  - sed -i 's/PRUNEPATHS="/&\/var\/nfs-share /' /etc/updatedb.conf
+  # disable updatedb from scanning /backup
+  - sed -i 's/PRUNEPATHS="/&\/backup /' /etc/updatedb.conf
   # to avoid perl errors on locale
   - locale-gen "en_US.UTF-8"
   - update-alternatives --set editor /usr/bin/vim.basic
   # Hetzner CIFS storagebox
   - apt install linux-modules-extra-$(uname -r) -y
   - mount -a
-  # for keepalived
-  - modprobe ip_vs
+  - exportfs -arvf
+  - systemctl start nfs-kernel-server
+  - systemctl enable nfs-kernel-server
+
 
 # Write arbitrary files on filesystem
 write_files:
@@ -211,21 +206,13 @@ write_files:
       autocmd BufWritePre * :%s/\s\+$//e
     path: /etc/vim/vimrc.local
   - content: |
-      #!/bin/sh
-      # periodically cleanup of images not used
-      /usr/bin/docker system prune --force --all
-    path: /etc/cron.daily/docker-cleanup
-    permissions: '0755'
-  - content: |
       username=SMB_USERNAME
       password=SMB_PASSWORD
     path: /etc/smb-credentials.txt
     permissions: '0600'
   - content: |
       # mount CIFS https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs
-      # since we need some 0600 and CIFS has no permission differentiation, we set it all like that
-      # https://geek-cookbook.funkypenguin.co.nz/docker-swarm/traefik/
-      //SMB_USERNAME.your-storagebox.de/backup /backup cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0660,dir_mode=0770 0 0
+      //SMB_USERNAME.your-storagebox.de/backup /backup cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0600,dir_mode=0770 0 0
     path: /etc/fstab
     append: true
   - content: |
@@ -237,35 +224,9 @@ write_files:
     path: /var/lib/cloud/scripts/per-boot/install_linux-modules-extra.sh
     permissions: '0700'
   - content: |
-      # https://geek-cookbook.funkypenguin.co.nz/docker-swarm/keepalived/
-      modprobe ip_vs
-    path: /etc/modules
+      /var/nfs-share *(rw,sync,no_root_squash,no_subtree_check)
+    path: /etc/exports
     append: true
-  - content: |
-      #!/bin/bash
-      docker run -d --name keepalived --restart=always \
-      --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
-      -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:['10.10.10.201', '10.10.10.202', '10.10.10.203']" \
-      -e KEEPALIVED_VIRTUAL_IPS=10.10.10.200 \
-      -e KEEPALIVED_PRIORITY=200 \
-      osixia/keepalived:2.0.20
-    path: /root/docker-run-keepalived-master.sh
-    permissions: '0700'
-  - content: |
-      #!/bin/bash
-      docker run -d --name keepalived --restart=always \
-      --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
-      -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:['10.10.10.201', '10.10.10.202', '10.10.10.203']" \
-      -e KEEPALIVED_VIRTUAL_IPS=10.10.10.200 \
-      -e KEEPALIVED_PRIORITY=100 \
-      osixia/keepalived:2.0.20
-    path: /root/docker-run-keepalived.sh
-    permissions: '0700'
-  - content: |
-      NFS_SERVER_IP:/var/nfs-share  /var/data nfs defaults,_netdev  0 0
-    path: /etc/fstab
-    append: true
-
 
 # Echo the following message when finished without errors
 final_message: "===> cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"

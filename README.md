@@ -1,11 +1,30 @@
 # Docker swarm in Proxmox
 
+Create `secrets`
+
+```
+cat secrets
+# Samba CIFS credentials
+SMB_USERNAME=uuuuuuuuuu
+SMB_PASSWORD=xxxx
+# NFS credentials
+NFS_SHARE_PASSWORD=xxxxxxxxx
+```
+
+# Storage
 In a Proxmox host, create 3 swarm nodes with
 
 ```
-./create_ubuntu_vm.sh 201 # master
-./create_ubuntu_vm.sh 202
-./create_ubuntu_vm.sh 203
+./create_nfs_server_vm.sh 210
+```
+
+# Swarm nodes
+In a Proxmox host, create 3 swarm nodes with
+
+```
+./create_swarm_vm.sh 201 # master
+./create_swarm_vm.sh 202
+./create_swarm_vm.sh 203
 ```
 
 # Swarm init
