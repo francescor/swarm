@@ -18,6 +18,14 @@ In a Proxmox host, create 3 swarm nodes with
 ./create_nfs_server_vm.sh 210
 ```
 
+# Wireguard for the swarm
+
+The NFS server is also the gateway for all swarm nodes, since it is a wireguard peers
+to a VPN wireguard provider (mullvad).
+
+Firewall traffic to the internet for swarm nodes use the NFS/Wireguard gw
+
+
 # Swarm nodes
 In a Proxmox host, create 3 swarm nodes with
 

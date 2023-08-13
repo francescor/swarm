@@ -127,8 +127,8 @@ runcmd:
   - mkdir /var/nfs-share
   # - chgrp users /var/nfs-share
   - chmod 775 /var/nfs-share
-  - mkdir /backup
-  - chmod 02775 /backup
+  - mkdir /StorageBox
+  - chmod 02775 /StorageBox
   - systemctl restart qemu-guest-agent
   - apt purge -y  popularity-contest
   - apt -y autoremove
@@ -159,8 +159,8 @@ runcmd:
   - rm -rf /var/crash/*
   # disable updatedb from scanning /var/nfs-share
   - sed -i 's/PRUNEPATHS="/&\/var\/nfs-share /' /etc/updatedb.conf
-  # disable updatedb from scanning /backup
-  - sed -i 's/PRUNEPATHS="/&\/backup /' /etc/updatedb.conf
+  # disable updatedb from scanning /StorageBox
+  - sed -i 's/PRUNEPATHS="/&\/StorageBox /' /etc/updatedb.conf
   # to avoid perl errors on locale
   - locale-gen "en_US.UTF-8"
   - update-alternatives --set editor /usr/bin/vim.basic
@@ -213,7 +213,7 @@ write_files:
     permissions: '0600'
   - content: |
       # mount CIFS https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs
-      //SMB_USERNAME.your-storagebox.de/backup /backup cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0600,dir_mode=0770 0 0
+      //SMB_USERNAME.your-storagebox.de/backup /StorageBox cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0600,dir_mode=0770 0 0
     path: /etc/fstab
     append: true
   - content: |

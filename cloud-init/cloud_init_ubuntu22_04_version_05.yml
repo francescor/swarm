@@ -134,9 +134,9 @@ runcmd:
   - mkdir /var/data
   # - chgrp users /var/data
   # - chmod 02775 /var/data
-  - mkdir /backup
-  - chgrp users /backup
-  - chmod 02775 /backup
+  - mkdir /StorageBox
+  - chgrp users /StorageBox
+  - chmod 02775 /StorageBox
   - systemctl restart qemu-guest-agent
   - apt purge -y  popularity-contest
   - apt -y autoremove
@@ -225,7 +225,7 @@ write_files:
       # mount CIFS https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs
       # since we need some 0600 and CIFS has no permission differentiation, we set it all like that
       # https://geek-cookbook.funkypenguin.co.nz/docker-swarm/traefik/
-      //SMB_USERNAME.your-storagebox.de/backup /backup cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0660,dir_mode=0770 0 0
+      //SMB_USERNAME.your-storagebox.de/backup /StorageBox cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0660,dir_mode=0770 0 0
     path: /etc/fstab
     append: true
   - content: |
