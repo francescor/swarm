@@ -69,7 +69,8 @@ qm set $VM_ID --serial0 socket --vga serial0
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
 qm set $VM_ID --agent enabled=1
-qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.254
+# we use the nfs server to reach the internet (it has mullvad)
+qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.210
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`

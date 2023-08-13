@@ -99,6 +99,7 @@ packages:
   - vim
   - wget
   - whois
+  - wireguard
   - yamllint
   - zip
 
@@ -226,6 +227,12 @@ write_files:
   - content: |
       /var/nfs-share *(rw,sync,no_root_squash,no_subtree_check)
     path: /etc/exports
+    append: true
+  - content: |
+      # allow forwarding traffic for this VM to be a gateway
+      # (it will be a wireguard connected to mullvad)
+      net.ipv4.ip_forward=1
+    path: /etc/sysctl.conf
     append: true
 
 # Echo the following message when finished without errors
