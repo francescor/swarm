@@ -71,3 +71,7 @@ ssh 10.10.10.203
 docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 sudo /root/docker-run-keepalived.sh
 ```
+
+# Download path
+
+https://wiki.servarr.com/docker-guide#consistent-and-well-planned-paths
