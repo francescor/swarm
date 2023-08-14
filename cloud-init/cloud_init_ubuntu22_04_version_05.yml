@@ -225,7 +225,7 @@ write_files:
       # mount CIFS https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs
       # since we need some 0600 and CIFS has no permission differentiation, we set it all like that
       # https://geek-cookbook.funkypenguin.co.nz/docker-swarm/traefik/
-      //SMB_USERNAME.your-storagebox.de/backup /StorageBox cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=0,gid=0,file_mode=0660,dir_mode=0770 0 0
+      //SMB_USERNAME.your-storagebox.de/backup /StorageBox cifs iocharset=utf8,rw,credentials=/etc/smb-credentials.txt,uid=1001,gid=100,file_mode=0660,dir_mode=0770 0 0
     path: /etc/fstab
     append: true
   - content: |
