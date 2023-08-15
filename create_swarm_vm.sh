@@ -57,7 +57,7 @@ iptables -I OUTPUT -j ACCEPT
 wget --no-clobber --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 # re-enable firewall rules
 shorewall restart
-qm create $VM_ID --name "swarm${IP}" --memory 2048 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
+qm create $VM_ID --name "swarm${IP}" --memory 10240 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
 qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img,backup=0
 # add disk for /var/lib/docker disk
 qm set $VM_ID --scsi1 local-zfs:100,backup=0
