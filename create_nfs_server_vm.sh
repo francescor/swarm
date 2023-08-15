@@ -73,6 +73,8 @@ qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.254
 qm set $VM_ID --onboot 1
 # set startup: order=1
 qm set $VM_ID --startup order=1
+# enable protection
+qm set $VM_ID --protection 1
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_nfs_server_version_*.yml | tail -n 1`
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`
