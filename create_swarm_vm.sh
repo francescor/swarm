@@ -79,17 +79,19 @@ qm set $VM_ID --onboot 1
 qm set $VM_ID --startup order=99990${IP}
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
-SNIPPET=`basename ${LATEST_CLOUD_INIT}`
-# cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+TEMPLATE_FILENAME=`basename ${LATEST_CLOUD_INIT}`
+SNIPPET_FILENAME=VM_${VM_ID}_${TEMPLATE_FILENAME}
+SNIPPET=${SNIPPETS_DIR}/${SNIPPET_FILENAME}
+# copy template in proxmox snippet dir
 # use path for cp to avoid using aliases
-/usr/bin/cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+/usr/bin/cp $LATEST_CLOUD_INIT $SNIPPET
 # customize hostname
-sed -i "s/my_hostname/swarm-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
-sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}
-sed -i "s/SMB_USERNAME/${SMB_USERNAME}/g" $SNIPPETS_DIR/${SNIPPET}
-sed -i "s/SMB_PASSWORD/${SMB_PASSWORD}/g" $SNIPPETS_DIR/${SNIPPET}
-sed -i "s/NFS_SERVER_IP/${NFS_SERVER_IP}/g" $SNIPPETS_DIR/${SNIPPET}
-qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET}"
+sed -i "s/my_hostname/swarm-${VM_ID}/g" $SNIPPET
+sed -i "s/my_domain/aaahoy.local/g" $SNIPPET
+sed -i "s/SMB_USERNAME/${SMB_USERNAME}/g" $SNIPPET
+sed -i "s/SMB_PASSWORD/${SMB_PASSWORD}/g" $SNIPPET
+sed -i "s/NFS_SERVER_IP/${NFS_SERVER_IP}/g" $SNIPPET
+qm set $VM_ID --cicustom "user=local:snippets/${SNIPPET_FILENAME}"
 # Resize disk
 qm resize $VM_ID scsi0 +50G
 # Start VM
