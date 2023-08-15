@@ -75,10 +75,14 @@ qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.210
 qm set $VM_ID --nameserver 10.64.0.1
 # start VM at proxmox boot
 qm set $VM_ID --onboot 1
+# set startup: order=9999020X
+qm set $VM_ID --startup order=99990${IP}
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`
-cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+# cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+# use path for cp to avoid using aliases
+/usr/bin/cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
 # customize hostname
 sed -i "s/my_hostname/swarm-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}

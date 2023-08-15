@@ -71,10 +71,15 @@ qm set $VM_ID --agent enabled=1
 qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.254
 # start VM at proxmox boot
 qm set $VM_ID --onboot 1
+# set startup: order=1
+qm set $VM_ID --startup order=1
 # take the latest version of cloud-init
 LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_nfs_server_version_*.yml | tail -n 1`
 SNIPPET=`basename ${LATEST_CLOUD_INIT}`
-cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+# cp -f $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+# use path for cp to avoid using aliases
+/usr/bin/cp $LATEST_CLOUD_INIT $SNIPPETS_DIR/${SNIPPET}
+
 # customize hostname
 sed -i "s/my_hostname/nfs-${VM_ID}/g" $SNIPPETS_DIR/${SNIPPET}
 sed -i "s/my_domain/aaahoy.local/g" $SNIPPETS_DIR/${SNIPPET}

@@ -72,6 +72,11 @@ docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 sudo /root/docker-run-keepalived.sh
 ```
 
+# Set Proxmox boot order
+
+Give a `1` to NFS server, and 9999201, 9999202, 9999203 to others
+
+
 # Download path
 
 https://wiki.servarr.com/docker-guide#consistent-and-well-planned-paths
