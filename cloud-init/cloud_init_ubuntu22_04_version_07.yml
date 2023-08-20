@@ -144,6 +144,17 @@ runcmd:
   - mkdir /StorageBox
   - chgrp users /StorageBox
   - chmod 02775 /StorageBox
+  # requisiti redis, mongo, etc...
+  - sysctl vm.overcommit_memory=1
+  - sysctl -w net.core.somaxconn=65535
+  - echo 'vm.overcommit_memory = 1' >>  /etc/sysctl.conf
+  - echo 'net.core.somaxconn = 65535' >>  /etc/sysctl.conf
+  - echo never > /sys/kernel/mm/transparent_hugepage/enabled
+  # il seguente necessita di pacchetto sysfsutils
+  - echo 'kernel/mm/transparent_hugepage/enabled = never' >> /etc/sysfs.conf
+  # requisito elasticsearch
+  - echo 'vm.max_map_count = 262144' >>  /etc/sysctl.conf
+  - sysctl -w vm.max_map_count=262144
   - systemctl restart qemu-guest-agent
   - apt purge -y  popularity-contest
   - apt -y autoremove
