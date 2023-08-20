@@ -146,8 +146,8 @@ runcmd:
   - chmod 02775 /StorageBox
   # requisiti redis, mongo, etc...
   - sysctl vm.overcommit_memory=1
-  - sysctl -w net.core.somaxconn=65535
   - echo 'vm.overcommit_memory = 1' >>  /etc/sysctl.conf
+  - sysctl -w net.core.somaxconn=65535
   - echo 'net.core.somaxconn = 65535' >>  /etc/sysctl.conf
   - echo never > /sys/kernel/mm/transparent_hugepage/enabled
   # il seguente necessita di pacchetto sysfsutils
