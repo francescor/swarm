@@ -25,7 +25,7 @@ apt:
   sources:
     docker:
       source: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
-      keyid: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88" 
+      keyid: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
 
 # Upgrade the instance on first boot
 package_upgrade: true
@@ -58,7 +58,7 @@ packages:
   - tree
   - unattended-upgrades
   - vim
-
+  - yamllint
 
 groups:
   - users
@@ -111,4 +111,16 @@ write_files:
       autocmd FileType bash setlocal ts=2 sts=2 sw=2 expandtab fileencoding=utf-8
       autocmd FileType json setlocal ts=2 sts=2 sw=2 expandtab fileencoding=utf-8
     path: /etc/vim/vimrc.local
-
+  - content: |
+      ---
+      # see `man yamllint`
+      # relax some rules
+      extends: default
+      rules:
+        line-length: disable
+    path: /etc/default/yamllint.yaml
+  - content: |
+      # yamllint conf file
+      YAMLLINT_CONFIG_FILE=/etc/default/yamllint.yaml
+    path: /etc/environment
+    append: true

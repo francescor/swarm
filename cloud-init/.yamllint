@@ -1,0 +1,8 @@
+---
+
+# vedi `man yamllint`
+
+extends: default
+
+rules:
+  line-length: disable
