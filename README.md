@@ -54,8 +54,7 @@ sudo /root/docker-run-keepalived-master.sh
 ```
 
 
-
-# initialize swarm
+now initialize the swarm
 
 ```
 docker swarm init  --max-snapshots 2 \
