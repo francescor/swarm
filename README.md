@@ -12,21 +12,22 @@ NFS_SHARE_PASSWORD=xxxxxxxxx
 ```
 
 # Storage
-In a Proxmox host, create 3 swarm nodes with
+In a Proxmox host, create one NFS server with
 
 ```
+# IP will be: 10.10.10.210
 ./create_nfs_server_vm.sh 210
 ```
 
 # Wireguard for the swarm
 
-The NFS server is also the gateway for all swarm nodes, since it is a wireguard peers
+The NFS server is also serve as the gateway for all swarm nodes: a wireguard peers
 to a VPN wireguard provider (mullvad).
 
 Firewall traffic to the internet for swarm nodes use the NFS/Wireguard gw
 
-
 # Swarm nodes
+
 In a Proxmox host, create 3 swarm nodes with
 
 ```
@@ -55,11 +56,16 @@ sudo /root/docker-run-keepalived-master.sh
 
 
 # initialize swarm
+
+```
 docker swarm init  --max-snapshots 2 \
                    --default-addr-pool 10.22.0.0/16 \
                    --default-addr-pool-mask-length 24
+```
 
-# get command to add other nodes
+the get the command to add other nodes with
+
+```
 docker swarm join-token manager
 ```
 
@@ -80,9 +86,10 @@ docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 
 # Set Proxmox boot order
 
-Give a `1` to NFS server, and 9999201, 9999202, 9999203 to others
+In case of reboot of the Proxmox host, we want the NFS server to be up before the swarm nodes, so give
+a `1` to NFS server as boot priority in Proxmox, and 9999201, 9999202, 9999203 to others
 
 
-# Download path
+# Tips on how to plan a data path for your docker data
 
 https://wiki.servarr.com/docker-guide#consistent-and-well-planned-paths
