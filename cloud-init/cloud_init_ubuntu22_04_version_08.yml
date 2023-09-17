@@ -297,6 +297,15 @@ write_files:
       NFS_SERVER_IP:/var/nfs-share  /srv nfs defaults,_netdev  0 0
     path: /etc/fstab
     append: true
+  - content: |
+      # limit the size of journald or else is 4G
+      SystemMaxUse=500M
+    path: /etc/systemd/journald.conf
+    append: true
+
+
+runcmd:
+  - systemctl restart systemd-journald.service
 
 
 # Echo the following message when finished without errors
