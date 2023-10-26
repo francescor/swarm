@@ -31,7 +31,7 @@ Firewall traffic to the internet for swarm nodes use the NFS/Wireguard gw
 In a Proxmox host, create 3 swarm nodes with
 
 ```
-./create_swarm_vm.sh 201 # master
+./create_swarm_vm.sh 201 # leader
 ./create_swarm_vm.sh 202
 ./create_swarm_vm.sh 203
 ```
