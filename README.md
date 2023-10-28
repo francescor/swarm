@@ -53,7 +53,6 @@ but the master for keepalive could be any other node)
 sudo /root/docker-run-keepalived-master.sh
 ```
 
-
 now initialize the swarm
 
 ```
