@@ -59,7 +59,8 @@ now initialize the swarm
 ```
 docker swarm init  --max-snapshots 2 \
                    --default-addr-pool 10.22.0.0/16 \
-                   --default-addr-pool-mask-length 24
+                   --default-addr-pool-mask-length 24 \
+                   --advertise-addr 10.10.10.201
 ```
 
 the get the command to add other nodes with
