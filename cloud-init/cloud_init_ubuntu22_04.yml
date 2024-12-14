@@ -190,9 +190,9 @@ runcmd:
   - mount -a
   # for keepalived
   - modprobe ip_vs
+  - systemctl restart systemd-journald.service
   # more
-  - curl -o /usr/local/bin/deploy https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/deploy && chmod +x /usr/local/bin/deploy
-  - curl -o /usr/local/bin/slacktee https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/slacktee && chmod +x /usr/local/bin/slacktee
+  - ln -s /srv/stack/bin/deploy /usr/local/bin/deploy
   - curl -o /usr/local/bin/docker-stack-ps https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/docker-stack-ps && chmod +x /usr/local/bin/docker-stack-ps
   - curl -o /usr/local/bin/today-filter-docker-ps https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/today-filter-docker-ps && chmod +x /usr/local/bin/today-filter-docker-ps
   - wget https://gitlab.com/opencity-labs/provisioning/-/raw/main/cloud-init-scripts/vimrc.local_for_managers -O /etc/vim/vimrc.local
@@ -304,11 +304,6 @@ write_files:
       SystemMaxUse=500M
     path: /etc/systemd/journald.conf
     append: true
-
-
-runcmd:
-  - systemctl restart systemd-journald.service
-
 
 # Echo the following message when finished without errors
 final_message: "===> cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"
