@@ -189,7 +189,7 @@ runcmd:
   - locale-gen "en_US.UTF-8"
   - update-alternatives --set editor /usr/bin/vim.basic
   # Hetzner CIFS storagebox
-  - apt install linux-modules-extra-$(uname -r) -y
+  # - apt install linux-modules-extra-$(uname -r) -y
   - mount -a
   # for keepalived
   - modprobe ip_vs
