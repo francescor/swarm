@@ -138,7 +138,7 @@ users:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa9Rib5xmP+bAd+JC5zM1EK5RsAtYk6cYX+h++UUdj3 dante-ed25519@laptop
 
 runcmd:
-  - mkdir /srv
+  - mkdir -p /srv
   - chgrp users /srv
   - chmod 02775 /srv
   # requisiti redis, mongo, etc...
@@ -146,6 +146,8 @@ runcmd:
   - echo 'vm.overcommit_memory = 1' >>  /etc/sysctl.conf
   - sysctl -w net.core.somaxconn=65535
   - echo 'net.core.somaxconn = 65535' >>  /etc/sysctl.conf
+  - sysctl -w vm.swappiness=10
+  - echo 'vm.swappiness=10' >>  /etc/sysctl.conf
   - echo never > /sys/kernel/mm/transparent_hugepage/enabled
   # il seguente necessita di pacchetto sysfsutils
   - echo 'kernel/mm/transparent_hugepage/enabled = never' >> /etc/sysfs.conf
@@ -201,7 +203,7 @@ runcmd:
   - wget https://gitlab.com/opencity-labs/provisioning/-/raw/main/cloud-init-scripts/vim_plugins/add_vim_plugins.sh -O /root/cancellami/add_vim_plugins.sh && bash /root/cancellami/add_vim_plugins.sh
   # configurazioni yamllint
   - wget https://gitlab.com/opencity-labs/provisioning/-/raw/main/cloud-init-scripts/yamllint/yamllint.yaml -O /etc/default/yamllint.yaml
-
+  - echo "cd /srv/stack" >> /home/dante/.bashrc
 
 # Write arbitrary files on filesystem
 write_files:
@@ -262,14 +264,14 @@ write_files:
       password=SMB_PASSWORD
     path: /etc/smb-credentials.txt
     permissions: '0600'
-  - content: |
-      #!/bin/sh
-      # assure we have the proper linux-modules-extra installed
-      # even after the upgrade of the kernel
-      apt update
-      apt install linux-modules-extra-$(uname -r) -y
-    path: /var/lib/cloud/scripts/per-boot/install_linux-modules-extra.sh
-    permissions: '0700'
+  #- content: |
+  #    #!/bin/sh
+  #    # assure we have the proper linux-modules-extra installed
+  #    # even after the upgrade of the kernel
+  #    apt update
+  #    apt install linux-modules-extra-$(uname -r) -y
+  #  path: /var/lib/cloud/scripts/per-boot/install_linux-modules-extra.sh
+  #  permissions: '0700'
   - content: |
       # https://geek-cookbook.funkypenguin.co.nz/docker-swarm/keepalived/
       modprobe ip_vs
