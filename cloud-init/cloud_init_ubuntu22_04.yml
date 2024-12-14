@@ -194,7 +194,7 @@ runcmd:
   - modprobe ip_vs
   - systemctl restart systemd-journald.service
   # more
-  - ln -s /srv/stack/bin/deploy /usr/local/bin/deploy
+  - ln -s /srv/bin/deploy /usr/local/bin/deploy
   - curl -o /usr/local/bin/docker-stack-ps https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/docker-stack-ps && chmod +x /usr/local/bin/docker-stack-ps
   - curl -o /usr/local/bin/today-filter-docker-ps https://gitlab.com/opencity-labs/swarm-utils/-/raw/main/today-filter-docker-ps && chmod +x /usr/local/bin/today-filter-docker-ps
   - wget https://gitlab.com/opencity-labs/provisioning/-/raw/main/cloud-init-scripts/vimrc.local_for_managers -O /etc/vim/vimrc.local
