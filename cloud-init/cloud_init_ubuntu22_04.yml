@@ -141,9 +141,6 @@ runcmd:
   - mkdir /srv
   - chgrp users /srv
   - chmod 02775 /srv
-  - mkdir /StorageBox
-  - chgrp users /StorageBox
-  - chmod 02775 /StorageBox
   # requisiti redis, mongo, etc...
   - sysctl vm.overcommit_memory=1
   - echo 'vm.overcommit_memory = 1' >>  /etc/sysctl.conf
