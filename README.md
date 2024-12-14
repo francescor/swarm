@@ -21,7 +21,7 @@ In a Proxmox host, create one NFS server with
 
 # Wireguard for the swarm
 
-The NFS server is also serve as the gateway for all swarm nodes: a wireguard peers
+The NFS server is also the gateway for all swarm nodes: a wireguard peers
 to a VPN wireguard provider (mullvad).
 
 Firewall traffic to the internet for swarm nodes use the NFS/Wireguard gw
