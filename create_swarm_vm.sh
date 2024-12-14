@@ -79,7 +79,7 @@ qm set $VM_ID --onboot 1
 # set startup: order=9999020X
 qm set $VM_ID --startup order=99990${IP}
 # take the latest version of cloud-init
-LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04_version_*.yml | tail -n 1`
+LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04.yml | tail -n 1`
 TEMPLATE_FILENAME=`basename ${LATEST_CLOUD_INIT}`
 SNIPPET_FILENAME=VM_${VM_ID}_${TEMPLATE_FILENAME}
 SNIPPET=${SNIPPETS_DIR}/${SNIPPET_FILENAME}
@@ -104,4 +104,3 @@ echo "VM $VM_ID created and started, enter with"
 echo "ssh ubuntu@10.10.10.${VM_ID}"
 # follow cloud init output (it should reboot)
 # tail -f /var/log/cloud-init-output.log
-
