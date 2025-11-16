@@ -66,6 +66,8 @@ and setup for nodes
 I qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.210
 ```
 
+We've [removed this feature](https://github.com/francescor/swarm/commit/2c985b5290ee51733baed9aa7aa7cb97ffdad721).
+
 # Swarm nodes
 
 In a Proxmox host, create 3 swarm nodes with
