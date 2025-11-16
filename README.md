@@ -116,6 +116,7 @@ Host swarm-nfs.myswarm.local
 so now you can
 
 ```
+# ubuntu is sudo with no password
 ssh ubuntu@swarm-201.myswarm.local
 ```
 
