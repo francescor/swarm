@@ -27,6 +27,8 @@ SMB_PASSWORD=xxxx
 NFS_SHARE_PASSWORD=xxxxxxxxx
 ```
 
+Add your public SSH key in `ssh_public_keys/id_ed25519.pub`
+
 # Storage
 In a Proxmox host, create one NFS server with
 
