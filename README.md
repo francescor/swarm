@@ -1,8 +1,6 @@
 # Docker swarm in Proxmox
 
 
-Scripts to setup a Docker Swarm in Proxmox.
-
 The swarm will consist of a nodes created with cloud-init in Proxmox.
 
 A special "NFS node" is setup with NFS share for all other nodes (to store mainly stack files and config), and also with an external SMB/CIFS (e.g. Hetzner's StorageBox) mounted to backup data.
@@ -29,11 +27,12 @@ NFS_SHARE_PASSWORD=xxxxxxxxx
 
 Add your public SSH key in `ssh_public_keys/id_ed25519.pub`
 
-# Storage
+# Setup the Storage node
 In a Proxmox host, create one NFS server with
 
 ```
 # IP will be: 10.10.10.210
+su -
 ./create_nfs_server_vm.sh 210
 ```
 
@@ -94,6 +93,30 @@ In a Proxmox host, create 3 swarm nodes with
 ./create_swarm_vm.sh 201 # leader
 ./create_swarm_vm.sh 202
 ./create_swarm_vm.sh 203
+```
+
+You can enter new nodes with a tunnel on proxmox
+
+```
+# add in .ssh/config
+Host swarm-201.myswarm.local
+  HostName 10.10.10.201
+  ProxyCommand ssh myproxmox.example.com -W %h:%p
+Host swarm-202.myswarm.local
+  HostName 10.10.10.202
+  ProxyCommand ssh myproxmox.example.com -W %h:%p
+Host swarm-203.myswarm.local
+  HostName 10.10.10.203
+  ProxyCommand ssh myproxmox.example.com -W %h:%p
+Host swarm-nfs.myswarm.local
+  HostName 10.10.10.210
+  ProxyCommand ssh myproxmox.example.com -W %h:%p
+```
+
+so now you can
+
+```
+ssh ubuntu@swarm-201.myswarm.local
 ```
 
 # Swarm init
