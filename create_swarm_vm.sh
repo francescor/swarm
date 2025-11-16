@@ -69,9 +69,7 @@ qm set $VM_ID --serial0 socket --vga serial0
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
 qm set $VM_ID --agent enabled=1
-# we use the nfs server to reach the internet (it has mullvad)
-qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.210
-# get this from mullvad wireguard
+qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.254
 # qm set $VM_ID --nameserver 10.64.0.1
 qm set $VM_ID --nameserver 1.1.1.1
 # start VM at proxmox boot
@@ -108,4 +106,3 @@ echo "sudo tail -f /var/log/cloud-init-output.log"
 echo
 echo "see cloudinit in vm with:"
 echo "sudo vim /var/lib/cloud/instances/*/cloud-config.txt"
-

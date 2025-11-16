@@ -99,7 +99,6 @@ packages:
   - vim
   - wget
   - whois
-  - wireguard
   - yamllint
   - zip
 
@@ -229,35 +228,6 @@ write_files:
       /var/nfs-share *(rw,sync,no_root_squash,no_subtree_check)
     path: /etc/exports
     append: true
-  - content: |
-      # allow forwarding traffic for this VM to be a gateway
-      # (it will be a wireguard connected to mullvad)
-      net.ipv4.ip_forward=1
-    path: /etc/sysctl.conf
-    append: true
-  - content: |
-      # Get the following from mullvad (expire 13 Aug 2024)
-      [Interface]
-      # Device: Speedy Camel
-      PrivateKey = xxxxxxxxx
-      Address = x.x.x.x/32
-      #  DNS = x.x.x.x
-      ####################################################
-      # iptables firewall rules                          #
-      ####################################################
-      #    We enable I/O traffic for the VPN virtual interface: wg0
-      PostUp   = iptables -A FORWARD --in-interface  wg0 -j ACCEPT
-      PostUp   = iptables -A FORWARD --out-interface wg0 -j ACCEPT
-      # allow peers to surf the internet using mullvad
-      PostUp   = iptables -t nat -A POSTROUTING --source 10.10.10.0/24 --out-interface mullvad -j MASQUERADE
-      PostDown = iptables -t nat -D POSTROUTING --source 10.10.10.0/24 --out-interface mullvad -j MASQUERADE
-
-      [Peer]
-      PublicKey = xxxxxxxxxxxxxxxxxxxxxxxx
-      AllowedIPs = 0.0.0.0/0
-      Endpoint = x.x.x.x:3284
-    path: /etc/wireguard/mullvad.conf
-
 
 # Echo the following message when finished without errors
 final_message: "===> cloud-init finished his job at $TIMESTAMP, after $UPTIME seconds"
