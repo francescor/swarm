@@ -208,7 +208,8 @@ runcmd:
   # configurazioni yamllint
   - wget https://gitlab.com/opencity-labs/provisioning/-/raw/main/cloud-init-scripts/yamllint/yamllint.yaml -O /etc/default/yamllint.yaml
   - echo "cd /srv/stack" >> /home/dante/.bashrc
-
+  # stick to specified versions of docker
+  - apt-mark hold docker-ce docker-ce-cli docker-ce-rootless-extras
 # Write arbitrary files on filesystem
 write_files:
   - content: |
