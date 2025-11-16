@@ -1,5 +1,15 @@
 # Docker swarm in Proxmox
 
+
+Scripts to setup a Docker Swarm in Proxmox.
+
+The swarm will consist of a nodes created with cloud-init in Proxmox.
+
+A special "NFS node" is setup with NFS share for all other nodes (to store mainly stack files and config), and also with an external SMB/CIFS (e.g. Hetzner's StorageBox) mounted to backup data.
+
+
+# Credentials
+
 Create `secrets`
 
 ```
