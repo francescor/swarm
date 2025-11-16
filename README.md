@@ -5,6 +5,7 @@ The swarm will consist of a nodes created with cloud-init in Proxmox.
 
 A special "NFS node" is setup with NFS share for all other nodes (to store mainly stack files and config), and also with an external SMB/CIFS (e.g. Hetzner's StorageBox) mounted to backup data.
 
+A fixed internal IP `10.10.10.200` is assigned to each swarm node thanks to keepalived.
 
 # Requirement
 
