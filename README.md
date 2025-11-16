@@ -142,6 +142,8 @@ sudo /root/docker-run-keepalived-master.sh
 now initialize the swarm
 
 ```
+# become the user that is in `docker` group (or add ubuntu in that group)
+sudo su - dante
 docker swarm init  --max-snapshots 2 \
                    --default-addr-pool 10.22.0.0/16 \
                    --default-addr-pool-mask-length 24 \
@@ -172,7 +174,7 @@ docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 # Set Proxmox boot order
 
 In case of reboot of the Proxmox host, we want the NFS server to be up before the swarm nodes, so give
-a `1` to NFS server as boot priority in Proxmox, and 9999201, 9999202, 9999203 to others
+a `1` to NFS server as boot priority in Proxmox (Options/Start/Shutdown order=), and 9999201, 9999202, 9999203 to others
 
 
 # Tips on how to plan a data path for your docker data
