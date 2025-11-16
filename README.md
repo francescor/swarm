@@ -120,6 +120,8 @@ so now you can
 ssh ubuntu@swarm-201.myswarm.local
 ```
 
+(you can remove/customize additional users `remote & dante` in cloud-init)
+
 # Swarm init
 
 

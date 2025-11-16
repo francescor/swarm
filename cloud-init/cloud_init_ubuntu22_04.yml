@@ -125,6 +125,8 @@ users:
   - name: remote
     # generated with: mkpasswd --method=SHA-512 --rounds=4096
     passwd: $6$rounds=4096$8mprvMT/jbOzH.bh$YWArz.2Uk1jX7dSiI0RlqfL8Arc4vcypL3wBWb7ePazGfEKBhzC9YIdAF8NP90dC7GkdjUly9b5UEDbEHvhrx.
+    shell: /bin/bash
+    primary_group: users
     # do not prevents the user from changing their password
     lock_passwd: false
   - name: dante
