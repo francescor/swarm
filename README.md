@@ -176,6 +176,9 @@ docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 In case of reboot of the Proxmox host, we want the NFS server to be up before the swarm nodes, so you see this repo will set
 `1` to NFS server as boot priority in Proxmox (Options/Start/Shutdown order=), and 9999201, 9999202, 9999203 to others.
 
+# Remove snippets
+
+Leaving snippets used to create VM is apparently a risk (cloud-init starts at every boot so it can upgrade or have other effects on nodes, so better remove all snippets, by hand in storage or in .conf for VM
 
 # Tips on how to plan a data path for your docker data
 
