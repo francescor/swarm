@@ -21,10 +21,50 @@ In a Proxmox host, create one NFS server with
 
 # Wireguard for the swarm
 
-The NFS server is also the gateway for all swarm nodes: a wireguard peers
+An interesting setup is to route all outgoing traffic of the swarm by vpn/wireguard.
+
+This can be accomplished by installing wireguard on the NFS node and set it as the gateway for all swarm nodes: a wireguard peers
 to a VPN wireguard provider (mullvad).
 
-Firewall traffic to the internet for swarm nodes use the NFS/Wireguard gw
+```
+# setup for NFS node
+    - content: |
+        # allow forwarding traffic for this VM to be a gateway
+        # (it will be a wireguard connected to mullvad)
+        net.ipv4.ip_forward=1
+      path: /etc/sysctl.conf
+      append: true
+    - content: |
+        # Get the following from mullvad (expire 13 Aug 2024)
+        [Interface]
+        # Device: Speedy Camel
+        PrivateKey = xxxxxxxxx
+        Address = x.x.x.x/32
+        #  DNS = x.x.x.x
+        ####################################################
+        # iptables firewall rules                          #
+        ####################################################
+        #    We enable I/O traffic for the VPN virtual interface: wg0
+        PostUp   = iptables -A FORWARD --in-interface  wg0 -j ACCEPT
+        PostUp   = iptables -A FORWARD --out-interface wg0 -j ACCEPT
+        # allow peers to surf the internet using mullvad
+        PostUp   = iptables -t nat -A POSTROUTING --source 10.10.10.0/24 --out-interface mullvad -j MASQUERADE
+        PostDown = iptables -t nat -D POSTROUTING --source 10.10.10.0/24 --out-interface mullvad -j MASQUERADE
+
+        [Peer]
+        PublicKey = xxxxxxxxxxxxxxxxxxxxxxxx
+        AllowedIPs = 0.0.0.0/0
+        Endpoint = x.x.x.x:3284
+      path: /etc/wireguard/mullvad.conf
+
+```
+
+and setup for nodes
+
+```
+# we use the nfs server to reach the internet (it has mullvad)
+I qm set $VM_ID --ipconfig0 ip=10.10.10.${IP}/24,gw=10.10.10.210
+```
 
 # Swarm nodes
 
