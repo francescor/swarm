@@ -65,6 +65,8 @@ qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
 # we may skip this, but is useful to see the output of cloud-init in Proxmox console
 qm set $VM_ID --serial0 socket --vga serial0
+# set cputype=host
+qm set $VM_ID --cpu cputype=host
 # key for cloudinit (user: ubuntu)
 qm set $VM_ID --sshkey $SSH_KEY
 qm set $VM_ID --agent enabled=1
