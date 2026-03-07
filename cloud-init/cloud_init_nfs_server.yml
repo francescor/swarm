@@ -167,6 +167,8 @@ runcmd:
   - update-alternatives --set editor /usr/bin/vim.basic
   # Hetzner CIFS storagebox
   - apt install linux-modules-extra-$(uname -r) -y
+  # raise RPCNFSDCOUNT for NFS performamce
+  - sed -i 's/RPCNFSDCOUNT=8/RPCNFSDCOUNT=32/' /etc/default/nfs-kernel-server
   - mount -a
   - exportfs -arvf
   - systemctl start nfs-kernel-server
@@ -227,7 +229,9 @@ write_files:
     path: /var/lib/cloud/scripts/per-boot/install_linux-modules-extra.sh
     permissions: '0700'
   - content: |
-      /var/nfs-share *(rw,sync,no_root_squash,no_subtree_check)
+      # /var/nfs-share *(rw,sync,no_root_squash,no_subtree_check)
+      # using async
+      /var/nfs-share *(rw,async,no_root_squash,no_subtree_check)
     path: /etc/exports
     append: true
 

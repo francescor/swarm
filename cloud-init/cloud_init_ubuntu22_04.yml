@@ -303,7 +303,9 @@ write_files:
     path: /root/docker-run-keepalived.sh
     permissions: '0700'
   - content: |
-      NFS_SERVER_IP:/var/nfs-share  /srv nfs defaults,_netdev  0 0
+      # NFS_SERVER_IP:/var/nfs-share  /srv nfs defaults,_netdev  0 0
+      # more NFS performance
+      NFS_SERVER_IP:/var/nfs-share  /srv nfs nconnect=4,defaults,_netdev  0 0
     path: /etc/fstab
     append: true
   - content: |
