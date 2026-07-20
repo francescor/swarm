@@ -58,7 +58,7 @@ iptables -I OUTPUT -j ACCEPT
 # restore firewall rules even if the download fails
 trap 'shorewall restart' EXIT
 # Get image (always download fresh, never reuse a stale /tmp image)
-wget --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+wget --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
 # re-enable firewall rules
 shorewall restart
 trap - EXIT
@@ -84,7 +84,7 @@ qm set $VM_ID --onboot 1
 # set startup: order=9999020X
 qm set $VM_ID --startup order=99990${IP}
 # take the latest version of cloud-init
-LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu22_04.yml | tail -n 1`
+LATEST_CLOUD_INIT=`ls -v cloud-init/cloud_init_ubuntu26_04.yml | tail -n 1`
 TEMPLATE_FILENAME=`basename ${LATEST_CLOUD_INIT}`
 SNIPPET_FILENAME=VM_${VM_ID}_${TEMPLATE_FILENAME}
 SNIPPET=${SNIPPETS_DIR}/${SNIPPET_FILENAME}
