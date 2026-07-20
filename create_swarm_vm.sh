@@ -4,6 +4,9 @@
 # be executed on a Proxmox host
 # See also https://pve.proxmox.com/wiki/Cloud-Init_Support
 
+# fail fast: abort on errors, unset variables and pipeline failures
+set -euo pipefail
+
 # The snippets dir in Proxmox
 SNIPPETS_DIR=/var/lib/vz/snippets/
 # ssh for root access
@@ -43,8 +46,7 @@ IP=$1
 VM_ID="${IP}"
 
 # Assure VM is not already present
-qm list  | awk '{print $1}' | grep " $VM_ID"
-if [ $? -eq 0 ]
+if qm list | awk '{print $1}' | grep -x "$VM_ID" > /dev/null
   then
     echo "Error: VM with ID $VM_ID is already present"
     echo
@@ -53,10 +55,13 @@ fi
 
 # Enable out traffic from Proxmox
 iptables -I OUTPUT -j ACCEPT
-# Get image
-wget --no-clobber --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+# restore firewall rules even if the download fails
+trap 'shorewall restart' EXIT
+# Get image (always download fresh, never reuse a stale /tmp image)
+wget --output-document=/tmp/downloaded_image.img https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 # re-enable firewall rules
 shorewall restart
+trap - EXIT
 qm create $VM_ID --name "swarm${IP}" --memory 10240 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
 qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img,backup=0
 # add disk for /var/lib/docker disk
