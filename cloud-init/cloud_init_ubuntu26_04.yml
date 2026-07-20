@@ -291,6 +291,16 @@ write_files:
     path: /etc/modules
     append: true
   - content: |
+      # TEMPORARY bridge for mixed-engine swarms (27.x managers + 29.x nodes):
+      # docker 27.5.1 managers do not present ALPN in their TLS handshake and
+      # grpc-go >= 1.67 (vendored in docker 29) enforces it, so `swarm join`
+      # fails with "missing selected ALPN property".
+      # REMOVE this drop-in once every node in the swarm runs docker >= 29.
+      [Service]
+      Environment=GRPC_ENFORCE_ALPN_ENABLED=false
+    path: /etc/systemd/system/docker.service.d/alpn-bridge.conf
+    permissions: '0644'
+  - content: |
       # Native keepalived, VRRP multicast: identical config on EVERY node,
       # nodes join/leave the VIP election automatically (no peer lists).
       # The VIP follows whoever answers on local port 80 (traefik, host-mode).
