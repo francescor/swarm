@@ -5,7 +5,8 @@ The swarm will consist of a nodes created with cloud-init in Proxmox.
 
 A special "NFS node" is setup with NFS share for all other nodes (to store mainly stack files and config), and also with an external SMB/CIFS (e.g. Hetzner's StorageBox) mounted to backup data.
 
-A fixed internal IP `10.10.10.200` is assigned to each swarm node thanks to keepalived.
+A floating internal IP `10.10.10.200` (VIP) is managed by keepalived: it always
+points to the node currently running traefik, and follows it automatically.
 
 # Requirement
 
@@ -132,13 +133,12 @@ https://docs.docker.com/engine/reference/commandline/swarm_init/
 # enter what will be the leader
 ssh ubuntu@10.10.10.201
 ```
-then start keepalived on leader (for simplicity we se the keepalive master to this leader,
-but the master for keepalive could be any other node)
 
-```
-# execute keepalived, so to reach the swarm with 10.10.10.200
-sudo /root/docker-run-keepalived-master.sh
-```
+Note on keepalived: it is installed natively by cloud-init on every node, with an
+identical config (VRRP multicast, no peer lists). Nodes join/leave the VIP election
+automatically, and a track script assigns the VIP `10.10.10.200` to whichever node
+is actually running traefik (host-mode port 80). Nothing to start by hand.
+Traefik should be deployed with `constraints: [node.role == manager]` (no node pin).
 
 now initialize the swarm
 
@@ -162,13 +162,9 @@ Joint other nodes
 
 ```
 ssh 10.10.10.202
-sudo /root/docker-run-keepalived.sh
-
 docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 
 ssh 10.10.10.203
-sudo /root/docker-run-keepalived.sh
-
 docker swarm join --token xxxxxxxxxxxxxxxxxxx 10.10.10.201:2377
 ```
 
