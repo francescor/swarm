@@ -64,8 +64,10 @@ shorewall restart
 trap - EXIT
 qm create $VM_ID --name "swarm${IP}" --memory 10240 --cores 2 --net0 virtio,bridge=vmbr1 --scsihw virtio-scsi-pci
 qm set $VM_ID --scsi0 local-zfs:0,import-from=/tmp/downloaded_image.img,backup=0
-# add disk for /var/lib/docker disk
-qm set $VM_ID --scsi1 local-zfs:100,backup=0
+# docker disk -> /var/lib/docker (local volumes + swarm raft state)
+qm set $VM_ID --scsi1 local-zfs:50,backup=0
+# containerd disk -> /var/lib/containerd (Docker 29 image store: layers + build cache)
+qm set $VM_ID --scsi2 local-zfs:80,backup=0
 # Use cloud-init
 qm set $VM_ID --ide2 local-zfs:cloudinit
 qm set $VM_ID --boot order=scsi0
