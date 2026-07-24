@@ -231,6 +231,12 @@ runcmd:
   - apt-mark hold docker-ce docker-ce-cli docker-ce-rootless-extras
   # keepalived: config is already in place (write_files), join the VIP election
   - systemctl enable --now keepalived
+  # Provisioning is one-time; disable cloud-init so it does NOT re-run each boot.
+  # On Ubuntu 26.04 its network stage hangs on reboot, making the node
+  # un-rebootable; after provisioning nothing needs cloud-init (net=netplan,
+  # NFS=fstab). Removing the ide2 cloud-init drive does NOT help (cached
+  # datasource) -> this file is the real fix; node becomes reboot-safe.
+  - touch /etc/cloud/cloud-init.disabled
 # Write arbitrary files on filesystem
 write_files:
   # Make containerd/docker wait for their dedicated disks (mounted by LABEL with
